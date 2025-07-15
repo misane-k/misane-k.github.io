@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Base Station Call Simulation</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    #output { white-space: pre-line; background: #f0f0f0; padding: 10px; border: 1px solid #ccc; height: 200px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h2>Base Station Call Simulation</h2>
+
+  <form id="inputForm">
+    <label>total channel (20 int, default = 10)</label>
+    <div class="input-grid" id="x1Inputs"></div>
+
+    <label>reserve channel (20 int, default = 0)</label>
+    <div class="input-grid" id="x2Inputs"></div>
+
+    <label>call intensity (double)</label>
+    <input type="number" id="x3" step="any" value="0.74" /><br><br>
+
+    <button type="submit">Run</button>
+  </form>
+
+  <h3>Output</h3>
+  <div id="output"></div>
+
+  <script>
+    const outputDiv = document.getElementById("output");
+    let wasmHasRun = false;
+
+    const x1Defaults = Array(20).fill(10);
+    const x2Defaults = Array(20).fill(0);
+
+    for (let i = 0; i < 20; i++) {
+      const x1 = document.createElement("input");
+      x1.type = "number"; x1.value = x1Defaults[i]; x1.id = `x1_${i}`;
+      const x2 = document.createElement("input");
+      x2.type = "number"; x2.value = x2Defaults[i]; x2.id = `x2_${i}`;
+      document.getElementById("x1Inputs").appendChild(x1);
+      document.getElementById("x2Inputs").appendChild(x2);
+    }
+
+    function createWasiBindings(memory, args = []) {
+      const encoder = new TextEncoder();
+      const encodedArgs = args.map(arg => encoder.encode(arg + "\0"));
+      const totalArgDataSize = encodedArgs.reduce((sum, a) => sum + a.length, 0);
+
+      return {
+        args_get: (argv, argv_buf) => {
+          const view = new DataView(memory.buffer);
+          let bufOffset = argv_buf;
+          for (let i = 0; i < encodedArgs.length; i++) {
+            view.setUint32(argv + i * 4, bufOffset, true);
+            new Uint8Array(memory.buffer, bufOffset, encodedArgs[i].length).set(encodedArgs[i]);
+            bufOffset += encodedArgs[i].length;
+          }
+          return 0;
+        },
+        args_sizes_get: (argcPtr, argvBufSizePtr) => {
+          const view = new DataView(memory.buffer);
+          view.setUint32(argcPtr, encodedArgs.length, true);
+          view.setUint32(argvBufSizePtr, totalArgDataSize, true);
+          return 0;
+        },
+        environ_get: () => 0,
+        environ_sizes_get: () => 0,
+        fd_write: (fd, iovs_ptr, iovs_len, nwritten_ptr) => {
+          const view = new DataView(memory.buffer);
+          let written = 0;
+          for (let i = 0; i < iovs_len; i++) {
+            const ptr = view.getUint32(iovs_ptr + i * 8, true);
+            const len = view.getUint32(iovs_ptr + i * 8 + 4, true);
+            const bytes = new Uint8Array(memory.buffer, ptr, len);
+            const str = new TextDecoder().decode(bytes);
+            outputDiv.textContent += str;
+            written += len;
+          }
+          view.setUint32(nwritten_ptr, written, true);
+          return 0;
+        },
+        proc_exit: (code) => { throw new Error("WASI exit: " + code); },
+        clock_time_get: (id, precision, timePtr) => {
+          const now = BigInt(Date.now()) * 1000000n;
+          new DataView(memory.buffer).setBigUint64(timePtr, now, true);
+          return 0;
+        },
+        random_get: (bufPtr, bufLen) => {
+          const bytes = crypto.getRandomValues(new Uint8Array(bufLen));
+          new Uint8Array(memory.buffer, bufPtr, bufLen).set(bytes);
+          return 0;
+        },
+        fd_close: () => 0,
+        fd_fdstat_get: () => 0,
+        fd_seek: () => 0
+      };
+    }
+
+    let wasmInstance;
+    let memory;
+    let wasiBindings;
+
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), {
+      wasi_snapshot_preview1: {
+        args_get: (...args) => wasiBindings.args_get(...args),
+        args_sizes_get: (...args) => wasiBindings.args_sizes_get(...args),
+        environ_get: (...args) => wasiBindings.environ_get(...args),
+        environ_sizes_get: (...args) => wasiBindings.environ_sizes_get(...args),
+        fd_write: (...args) => wasiBindings.fd_write(...args),
+        proc_exit: (...args) => wasiBindings.proc_exit(...args),
+        clock_time_get: (...args) => wasiBindings.clock_time_get(...args),
+        random_get: (...args) => wasiBindings.random_get(...args),
+        fd_close: (...args) => wasiBindings.fd_close(...args),
+        fd_fdstat_get: (...args) => wasiBindings.fd_fdstat_get(...args),
+        fd_seek: (...args) => wasiBindings.fd_seek(...args)
+      }
+    }).then(result => {
+      wasmInstance = result.instance;
+      memory = wasmInstance.exports.memory || new WebAssembly.Memory({ initial: 10 });
+      wasiBindings = createWasiBindings(memory);
+      outputDiv.textContent += "WASM loaded.\n";
+    });
+
+    document.getElementById("inputForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      if (!wasmInstance) {
+        alert("WASM not ready");
+        return;
+      }
+
+      if (wasmHasRun) {
+        alert("WASM has already run once. Please refresh the page to run it again.");
+        return;
+      }
+
+      outputDiv.textContent = "Running...\n";
+
+      const x1 = [], x2 = [];
+      for (let i = 0; i < 20; i++) {
+        x1.push(parseInt(document.getElementById(`x1_${i}`).value) || 0);
+        x2.push(parseInt(document.getElementById(`x2_${i}`).value) || 0);
+      }
+      const x3 = parseFloat(document.getElementById("x3").value) || 0;
+
+      const x1Str = `[${x1.join(",")}]`;
+      const x2Str = `[${x2.join(",")}]`;
+
+      const args = ["main.wasm", x3, x2Str, x1Str];
+      wasiBindings = createWasiBindings(memory, args);
+
+      const mainFn = wasmInstance.exports._start || wasmInstance.exports.main;
+      if (!mainFn) {
+        alert("Missing entry function in WASM");
+        return;
+      }
+
+      wasmHasRun = true;
+      try {
+        mainFn();
+      } catch (e) {
+        outputDiv.textContent += "\nExited: " + e.message;
+      }
+    });
+  </script>
+</body>
+</html>
