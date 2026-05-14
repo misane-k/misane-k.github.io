@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>自制操作系统内核的感受 | misane&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="最早接触操作系统已经是很多年前的事了，核心代码也主要是一两年前编写的。如今很多细节已逐渐模糊，所以这篇文章，权当是记录我个人的心路历程吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自制操作系统内核的感受">
+<meta property="og:url" content="https://misane-k.github.io/2026/05/14/MY_KERNEL/index.html">
+<meta property="og:site_name" content="misane&#39;s blog">
+<meta property="og:description" content="最早接触操作系统已经是很多年前的事了，核心代码也主要是一两年前编写的。如今很多细节已逐渐模糊，所以这篇文章，权当是记录我个人的心路历程吧。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-05-14T01:35:59.720Z">
+<meta property="article:modified_time" content="2026-05-14T11:23:23.872Z">
+<meta property="article:author" content="misane">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="misane's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">misane&#39;s blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://misane-k.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-MY_KERNEL" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/05/14/MY_KERNEL/" class="article-date">
+  <time class="dt-published" datetime="2026-05-14T01:35:59.720Z" itemprop="datePublished">2026-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      自制操作系统内核的感受
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>最早接触操作系统已经是很多年前的事了，核心代码也主要是一两年前编写的。如今很多细节已逐渐模糊，所以这篇文章，权当是记录我个人的心路历程吧。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="在故事开始之前的故事"><a href="#在故事开始之前的故事" class="headerlink" title="在故事开始之前的故事"></a>在故事开始之前的故事</h2><p>在我小的时候，经常能在网上看到诸如“用XXX爆改XXX”的文章。<br>当时只觉得这些作者好厉害，久而久之，自己心里也萌生过很多不切实际的幻想。<br>例如，我常常思考能不能通过编写代码实现这些事：</p>
+<ol>
+<li>让电脑的游戏跑在手机上，随时插一个显示屏就能开玩。</li>
+<li>用普通的电脑网卡收听其他信号，例如FM广播。</li>
+<li>随时随地非授权远程控制别人电脑。</li>
+</ol>
+<p>现在的我当然明白，这些只靠我一个人，是很难甚至不可能实现的。<br>具体来说，实现1一般需要串流或转译，前者受限于网络延迟，后者则往往伴随着严重的性能损失；<br>实现2需要使用专门的SDR设备、普通网卡在物理设计上就无法捕获这些信号；<br>实现3需要学习并掌握很多N-day漏洞、社会工程学技巧、以及长期的权限维持等知识。<br>不过，那时的我毕竟还一无所知，于是就这样一直抱着对操作系统的憧憬，开始了我折腾的旅途。</p>
+<p>当我刚会装系统的时候，将FreeDOS，Win7，Win10装在同一个硬盘上，尽管平时很少真的去用它们。<br>还通过Grub4DOS，将32位Win7从U盘加载到内存启动。由于系统盘建立在内存上，跑小文件读写测试，直方图是非常漂亮的直线。而且因为对内存的修改会在重启后丢失，U盘上原有内容保持不变，这是天生的沙盒环境。<br>此外，我还尝试把Windows装到移动硬盘里（WinToGo），供Mac电脑引导启动。其实技术原理并不复杂，但是当时我问电脑城问了很多装系统的人，他们都说没法做。<br>那时候的我，总希望能压榨电脑的每一丝性能，因此偏爱命令行，认为图形页面能亮就行（这种看法有待商榷）。<br>FreeDOS看似很适合，有图形页面的文件管理器、也有内存扩展的机制能使用我电脑的4G内存。<br>但就我的实际体验而言，系统卡死就要整个机器重启了。以及我网卡驱动怎么也装不上，根本没法上网，想装软件只能拷到U盘安装。更别说常用软件根本不提供FreeDOS版本（在想什么）。<br>（后来才知道，满足这些需求的其实是Linux）</p>
+<p>我在<a target="_blank" rel="noopener" href="https://www.freedos.org/">FreeDOS</a>下载软件时，经常能看到对实模式的辩论，当时的我也不太懂。<br>但是有一句吐槽让我印象深刻：“连网卡驱动都支持不全，浏览器也很古老，FreeDOS官网无法用FreeDOS访问，这太不合理了”。<br>除此之外，我也经常看到操作系统辩经，例如“XXX系统稳定性不行，代码是屎山，根本不如XXX”。<br>多年之后，我才深刻认识到，抛开任何一个主流的操作系统不谈，就算是FreeDOS的工作量，也远远超过了个人开发者能驾驭的极限。</p>
+<p>初中和高中的时候，学校发了学习平板。我用了一段时间，便成功刷机破解，后来就天天在平板上写代码。<br>虽然屏幕分辨率和刷新率很低，看的我头晕，也没有外置键盘敲的我手指疼，但这依然是一段很快乐的时光。<br>让我印象很深的是<a target="_blank" rel="noopener" href="https://github.com/chenxiaolong/DualBootPatcher">多重引导 DualBootPatcher</a>，我通过修改json文件，成功在平板上适配这个应用，实现了“管控系统”和“无管控系统”的双系统自由切换（要在今天肯定去提个PR）</p>
+<h2 id="开发自己的操作系统"><a href="#开发自己的操作系统" class="headerlink" title="开发自己的操作系统"></a>开发自己的操作系统</h2><p>后来，我无意间阅读了《操作系统真象还原》，原来实现一个操作系统内核可以这么简单。<br>如果我当时看到的是别的晦涩难懂的大部头，估计已经劝退了吧。<br>由于一开始我想不到如何修改代码，所以我能做的只是照着他的代码敲一遍，最多偶尔改几个变量或字符串。一直跟到了硬盘驱动部分。<br>可能是量变引起了质变，突然有一天，我理解了作者代码背后的逻辑，于是便开始尝试加入我想要的功能。<br>例如将Bochs换成qemu，引导程序改为支持Multiboot2的grub2，从32位保护模式切换到64位长模式等。</p>
+<p>在此之前，虽然我在逆向安卓平板的过程中，已经理解了面向对象编程的思路，但是在写内核代码时，我依然更多地沿用了面向过程的习惯。<br>我并不擅长给函数起一个直观的好名字，再加上当时迷恋“简洁”的品味，不愿意写注释，导致后期根本没法维护。<br>比如，is_kernel_process, is_system_process这两个函数，只看名字完全看不出区别，但是代码有边界条件的区别<br>由于没有注释，时间一长，我根本不知道它们分别在什么情况下、被谁调用过。<br>这就导致系统经常在一些隐蔽的边界条件下出错，有时调试了半天发现这个bug我以前其实早就解决过一次了。<br>光是追踪那些错综复杂、深达好多层的函数引用，就已经耗尽了我所有的精力。<br>此外，在最开始设计内核时，我对条件竞争也不了解，虽然后期补加了很多自旋锁，但仍有很多关键数据结构没有更新，开启SMP后会随机报错。<br>而且，我的架构与x86-64强绑定的，没有考虑到跨平台（例如支持不同指令集）的问题。<br>当时的我还经常用nano写代码，并且每个版本手动打zip包备份，现在不得不感慨，VSCode搭配GitHub是真方便啊。<br>不过在当前架构下，我最终还是成功支持了busybox的运行，并且能在自己的UEFI电脑上裸机启动。<br>其实，我原本想支持GCC并实现自举，但是实在没法维护了。</p>
+<p>在那段日子里，我经常能灵光一闪，想到一些实用的底层功能。<br>例如我在某个平台的QEMU上，更新了内存并刷新了缓存，但是用户程序的执行行为没有变化，甚至会报访存错误。<br>我怀疑是QEMU的TCG缓存未同步更新。<br>我就做了一个简单的内置调试器，可以查看内存的值，以及插入断点指令。<br>后来我才发现，Linux内核中早就内置了类似的东西，叫KDB(Kernel Debugger)，当然人家的功能要完善得多。<br>不过，这种能和业界大佬们“想到一块儿去”的默契，让我感到无比开心。</p>
+<p>于此同时，我也关注到<a target="_blank" rel="noopener" href="https://ysyx.oscc.cc/">一生一芯</a>，尤其是NJU PA实验。<br>那个项目里对于底层设备的抽象让我大开眼界，极大提高了我对代码的品味。</p>
+<h2 id="希望未来会更好"><a href="#希望未来会更好" class="headerlink" title="希望未来会更好"></a>希望未来会更好</h2><p>实际上，单纯“实现”一个内核的雏形其实很简单，但是要真正将其“完成”，却是一件很困难的事情。</p>
+<details>
+<summary>硬核警告</summary>
+仔细想想，当系统能执行第一行内核代码时，CPU和内存已经基本可用了。即使不初始化其他设备，内核也可以实现很多功能了，例如内存的整页分配。<br>
+不过为了让系统实用起来。首先，我们需要实现串口输出，这就足以我们编写一个简单的crt，方便我们用“printf调试法”排查问题。<br>
+紧接着，只需要再实现create_tcb和yield函数，就能实现教科书上操作系统的雏形了。到这一步我们就可以宣称有“线程上下文”了。但是就我感觉，此时依然只能算一个函数库。<br>
+为了让它更像个真正的系统，接下来引入计时器中断，强制剥夺那些不主动让渡的程序的执行权，避免整个系统卡死。便构成了抢占式操作系统的雏形。<br>
+在此基础上，如果再添加一个读硬盘一个块的原语，就能实现文件系统了。当然前期为了省事，使用自定义格式的内存文件系统也是完全可行的。<br>
+然后，我们添加页表，我们就能同时加载多个程序、每个程序拥有独立的地址空间了。<br>
+最后，我们添加特权级和syscall机制，有了这些原语就足以构建出，支撑部分Linux程序运行的系统了。<br>
+具体来说，我们可以基于虚拟内存实现fork, brk, mmap, execve，基于文件系统实现open, read, write, close。基于进程机制实现waitpid等。<br>
+</details>
+
+<p>虽然我勉强把很多的功能都实现了，但是并不优雅。<br>即使内核完全初始化后，很多地方依然使用的O(n^2)的两层for循环比较，完全可以替换成更高效的数据结构。<br>还有很多代码需要抽象。例如，不管使用两层for循环、还是哈希表，都应该对外暴露统一的接口，这样才方便阅读和替换实现。<br>另外，x86-64初始化的过程极其繁琐而且是平台相关的，很可能内核只会用到一次。相比之下，riscv64就没有这么复杂的包袱。完全可以将这些平台相关的代码封装成arch_setup，来降低核心代码复杂度。<br><strong>一定要写多注释</strong>。很多优秀的开源项目中，注释的行数能与实际代码数不相上下，我终于体会到注释的重要性。<br>最后，断言和内存保护机制不完善，也没法dump core。用户态程序很多情况下报个段错误就被终止了，导致难以排查。<br>对于其他成熟的开源内核究竟能做到什么地步、实现了哪些高级特性，我目前的了解还不够深入。希望在未来的日子里，我能了解到实际业务流程中需要什么功能。<br>当然我最期望的，还是为我的内核加上虚拟化支持。（至少得能跑别的系统，玩个Galgame吧）</p>
+<p>现在的我，虽然不会再去做小时候那些懵懂无知的梦了，但我却再次做起了梦——一个属于程序员的、更好的梦。<br>希望未来会更好。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://misane-k.github.io/2026/05/14/MY_KERNEL/" data-id="cuidPV_brIQbeNdpFcnxKj-sG" data-title="自制操作系统内核的感受" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/05/14/PROXY/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          如何在阉割代理功能的平板上无感绕过网络白名单
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/05/14/CPU_CARD/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">逆向破解纯 CPU SAK20 NFC 校园卡</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上无感绕过网络白名单</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/MY_KERNEL/">自制操作系统内核的感受</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/CPU_CARD/">逆向破解纯 CPU SAK20 NFC 校园卡</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/OPS_PCIe/">PCIe DMA 踩坑：在废旧 OPS 上点亮 300 块的 FPGA 矿卡</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 misane<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
