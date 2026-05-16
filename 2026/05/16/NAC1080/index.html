@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>手机刷不开门禁？一怒之下我画了一张CPU卡 | misane&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="接上文 经过测试，我发现学校的不同门禁（例如大门、宿舍、教室、工位）检测内容不同。有的检测UID、有的检测文件里的其他值等。而且同样是宿舍，新旧读卡器设备行为也不完全相同。我的手机刷老门禁正常，换了新门禁就识别不到了，这一度让我很困惑。不过我习惯出门随身带卡，对我来说刷卡也更顺手一些。直到有一天，我打算自己画一张纯CPU卡。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手机刷不开门禁？一怒之下我画了一张CPU卡">
+<meta property="og:url" content="https://misane-k.github.io/2026/05/16/NAC1080/index.html">
+<meta property="og:site_name" content="misane&#39;s blog">
+<meta property="og:description" content="接上文 经过测试，我发现学校的不同门禁（例如大门、宿舍、教室、工位）检测内容不同。有的检测UID、有的检测文件里的其他值等。而且同样是宿舍，新旧读卡器设备行为也不完全相同。我的手机刷老门禁正常，换了新门禁就识别不到了，这一度让我很困惑。不过我习惯出门随身带卡，对我来说刷卡也更顺手一些。直到有一天，我打算自己画一张纯CPU卡。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-05-16T06:25:21.998Z">
+<meta property="article:modified_time" content="2026-05-16T11:02:57.512Z">
+<meta property="article:author" content="misane">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="misane's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">misane&#39;s blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://misane-k.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-NAC1080" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/05/16/NAC1080/" class="article-date">
+  <time class="dt-published" datetime="2026-05-16T06:25:21.998Z" itemprop="datePublished">2026-05-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      手机刷不开门禁？一怒之下我画了一张CPU卡
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>接<a href="https://misane-k.github.io/2026/05/14/CPU_CARD/">上文</a></p>
+<p>经过测试，我发现学校的不同门禁（例如大门、宿舍、教室、工位）检测内容不同。<br>有的检测UID、有的检测文件里的其他值等。而且同样是宿舍，新旧读卡器设备行为也不完全相同。<br>我的手机刷老门禁正常，换了新门禁就识别不到了，这一度让我很困惑。不过我习惯出门随身带卡，对我来说刷卡也更顺手一些。<br>直到有一天，我打算自己画一张纯CPU卡。</p>
+<span id="more"></span>
+
+<p>M1卡和CPU卡有所不同，CPU卡上有简易操作系统（COS）和文件系统。<br>如果能自己编写COS，理论上可以随意解释指令，例如对所有外部认证返回验证通过。<br>不过对于市面上常见的CPU卡（FM1208），我们能做的一般是修改文件。我暂未找到能改变执行代码的方式。<br>既然nfcgate的原理说明用户态可以接管APDU收发流程，那更轻量级的方案，例如MCU+射频前端，应该也是可行的。</p>
+<h2 id="芯片选型"><a href="#芯片选型" class="headerlink" title="芯片选型"></a>芯片选型</h2><p>既然要画在一张卡上，我希望尽量薄而且最好不用电池，于是搜索了一些芯片。</p>
+<p>有集成能量收集和MCU的：</p>
+<ul>
+<li>NAC1080（满足条件，更倾向智能锁，集成大电流H桥）</li>
+<li>LPC8N04（满足条件，更倾向传感器，内置高精度温度传感器等）</li>
+<li>RF430FRL152H（不满足条件，使用15693协议，常用于远距离标签）</li>
+</ul>
+<p>仅收集能量，需要MCU协作的：</p>
+<ul>
+<li>ST25DV</li>
+<li>FM11NC08</li>
+</ul>
+<p>如果把MCU和射频前端分开选择，可选择的型号更多。<br>例如，我本来想选MSP430作为MCU，它采用的FRAM（铁电存储器）功耗比FLASH低很多。<br>但是还要画核心板，还需要注意I2C&#x2F;SPI读写的协议，为了省事，最终还是选择了集成方案NAC1080。</p>
+<h2 id="绘制PCB"><a href="#绘制PCB" class="headerlink" title="绘制PCB"></a>绘制PCB</h2><p>接下来就是画PCB，我主要参考了这篇文章：<a target="_blank" rel="noopener" href="https://www.kika233.tech/blog/post/55">从零开始设计一个NFC天线</a></p>
+<details>
+<summary>硬核警告</summary>
+阅读手册可知，NAC1080内部集成了23.5pF调谐电容，在13.56Mhz频率下，求出天线电感是5.862uH时，不需要外加调谐电容。<br>
+于是我在<a target="_blank" rel="noopener" href="https://eds.st.com/antenna/#/">NFC Inductance</a>计算天线参数。<br>
+我根据个人喜好，选择了：7圈，天线长度64.5mm，天线宽度52mm，导体宽度0.6mm，导体间距0.5mm，PCB厚度0.8mm。相对介电常数保持默认。得出天线电感5.83uH。<br>
+使用<a target="_blank" rel="noopener" href="https://github.com/nideri/nfc_antenna_generator">nfc_antenna_generator</a>生成一个KiCad工程。<br>
+命令为：python antGen.py -n 7 -l 64.5 -w 52 -c 0.6 -s 0.5 -d -1 --style 1 -f main <br>
+（这里选择style1是因为，我想把芯片往上边靠，方便未来往下方扩展加其他芯片。）<br>
+生成KiCad工程后，我简单绘制并绑定了原理图符号，为了导入嘉立创EDA，将封装中的圆弧走线改为多边形。<br>
+（因为嘉立创不识别原有的圆弧走线，导入后会只剩下过孔）<br>
+参考官方<a target="_blank" rel="noopener" href="https://www.infineon.com/part/NAC1080">infineon</a>的被动模式设计，完成了剩下的部分。<br>
+（其实就额外放了两个电容，引出了pin5,6用于JLINK下载）<br>
+注意，这里<strong>一定要将pin10-VCC引出</strong>，后面会介绍在这里踩坑了。<br>
+</details>
+
+<p>然后，下载了工具链。<a target="_blank" rel="noopener" href="https://softwaretools.infineon.com/tools/com.ifx.tb.tool.smackfwdevelopmenta21004">smackfwdevelopmenta21004</a></p>
+<h2 id="逆向"><a href="#逆向" class="headerlink" title="逆向"></a>逆向</h2><p>阅读SDK代码时，我只看到了一些数据结构的声明，没有找到设置UID, SAK的代码。我发现官方为了简化开发流程，已经封装好了私有卡格式。<br>当然我们肯定是想要SAK&#x3D;0x20的纯CPU卡的。不过网络上基本找不到其他公开的设计，我只好对照SDK逆向ROM。</p>
+<details>
+<summary>硬核警告</summary>
+用ida反编译image_rom，并导入SDK的rom_lib.h，代码逻辑基本就清晰了，可以看出官方没有特意混淆。<br>
+上电首先进入start，随后跳转到sub_1AE4，在这个函数进行了一堆复杂的初始化，包括启用NFC 0号中断。<br>
+最后检查0x10800是否为0x22000（__INITIAL_SP），是就跳转到0x10804（NVM_Reset_Handler）。接下来就是用户代码。<br>
+用户代码流程大概是：NVM_Reset_Handler -> __nvm_cmsis_start -> _nvm_start（调用了vars_init） -> while(true) __WFI();<br>
+触发中断后，首先进入m_Cl_uart_Handler，随后立刻进入m_nfc_state_machine，这里实现了核心的NFC状态机。<br>
+在防碰撞阶段，它会调用m_handle_anticollision，这里返回了关键的UID和SAK。<br>
+虽然image_rom导出了rom_func_table，大部分函数可以通过rom_lib.h直接调用，但是部分函数内部用到的变量没有导出。<br>
+比如我们要获取接收到的原始报文，需要硬编码内存地址获取。<br>
+</details>
+
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>明白了固件的逻辑，我们参考反编译代码，重新实现一遍NFC状态机就可以了。<br>不过这时我才发现，固件（image_rom）是只读的，而且是封装在芯片内部的。<br>触发NFC中断时，一定会跑官方的私有协议处理程序，我在想有没有方式绕过：</p>
+<details>
+<summary>硬核警告</summary>
+NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定地址查找中断处理程序。我依次考虑了以下对策：<br>
+1. 查看是否调用用户中断处理函数：部分异常（如HardFault）是会的，但是很遗憾NFC中断并不会。<br>
+2. 重定向中断向量表：我之前开发OS内核时，大部分PC是可以这么做的。但是M0通常不实现VTOR寄存器。<br>
+3. 重新配置中断号：类似PCIe可以修改触发的中断号。NAC1080部分中断确实可以重新配置，但是官方给的库无法重新配置NFC中断。<br>
+4. 关闭中断改成轮询：可行但是功耗太高（中断方案只要2mA，而轮询功耗需要5mA），而且很不稳定
+最终，我找到了一个方法：<br>
+我发现M0有双栈机制，在Thread模式默认使用PSP栈，产生异常后硬件会自动压栈并切换到MSP栈。<br>
+这个机制常用于RTOS作为轻量级的异常上下文切换机制。虽然用户真要绕过也是能做到的。<br>
+但是如果PSP为异常值，压栈失败呢？会升级为HardFault异常，这时就直接切换到MSP，去执行HardFault Handler，固件的HardFault Handler会调用用户函数。<br>
+既然用户程序最终执行到while(true) __WFI();，我们完全可以在循环前切换到Thread模式使用PSP，然后故意破坏栈指针。<br>
+当触发NFC 0号中断时，硬件压栈失败升级为HardFault，切换到MSP栈然后调用HardFault Handler，然后调用我们的接管函数。<br>
+我们在这里处理完NFC中断，然后切换回Thread模式再次设置PSP为异常值。即可稳定接管0号中断。<br>
+（不过若在HardFault处理过程中再次发生异常，CPU会进入锁定状态。）<br>
+</details>
+
+<p>我先用qemu测试，确认这套流程没问题。接下来下载到NAC1080实测，可以稳定的接管NFC中断。<br>当然，完善代码还需要很繁琐的调试，这里就不赘述了。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>烧录和调试用的是JLINK。最开始我外置电源连的是pin2-VCC_HB，但是下载器始终找不到芯片。<br>只有刷卡那一瞬间能找到芯片，但是马上断联，因而我发现是供电不足。<br>只能用数控电源，飞线短接pin10-VCC供电，3.3V下大约需要消耗2mA的电流，这才稳定运行。</p>
+<p>写好之后，我去门禁测试，发现只有部分老机型能识别。为了排查，我用proxmark3抓包。<br>（部分新设备抓包时有奇怪的问题，pm3一靠近就不识别卡了，拿开才能识别。怀疑是pm3的金属外壳影响了阻抗。）<br>我发现，针对不同的读卡器，有三种现象：</p>
+<ol>
+<li>卡片一切正常。</li>
+<li>卡片返回固件的私有格式，且伴随很多帧校验错误。</li>
+<li>读卡器一直寻卡，但是卡片没有任何响应。</li>
+</ol>
+<p>我怀疑是新读卡器缩短了建立场和发送寻卡指令的时间，并且快速关闭了场。<br>导致 2.我的代码还没来得及接管NFC中断 3.卡片没来得及初始化就断电了。<br>我重新画了一版，添加了一个纽扣电池供电，这些问题全都解决了。</p>
+<h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>有一些没能验证的想法，和未来想继续做的内容：</p>
+<ol>
+<li>NAC1080已经停产了，也没看到后续升级版本，之后画板估计要使用别的芯片了。</li>
+<li><strong>JavaCard</strong>可以编写自己代码，不过好像需要先select AID，我不确定有没有从select MF开始就能直接执行默认应用的卡。</li>
+<li>我不确定打<strong>硬件断点</strong>来劫持函数是否可行，如果可行可能会比现有方案还要简洁。</li>
+<li>虽然天线绘制一次就能用了，但是我不知道天线性能怎么样，我也没有矢量网络分析仪测试。</li>
+<li>我使用的纽扣电池CR1220，最大持续电流不超过1mA，新机型读卡器提供能量不足以启动，连续刷卡时不仅容易断联，而且用几分钟电池电压就下降到没法用了。想要稳定使用还得在画一版。</li>
+<li>我测试的时间不够长，在异常处理函数中构造上下文返回，不确定有没有MSP栈越来越小的问题，虽然可以断电重置但是不优雅。</li>
+<li>加上芯片和纽扣电池座还是太厚了，希望未来能用PVC塑封，再通过卡片打印机打印漂亮的封面。</li>
+</ol>
+<blockquote>
+<p>PCB和代码目前不打算公开，如果某一天开源后再更新</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://misane-k.github.io/2026/05/16/NAC1080/" data-id="cuidTnnb9jqytpW6d6ggTI7ZR" data-title="手机刷不开门禁？一怒之下我画了一张CPU卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/05/14/PROXY/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">如何在阉割代理功能的平板上无感绕过网络白名单</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/05/16/NAC1080/">手机刷不开门禁？一怒之下我画了一张CPU卡</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上无感绕过网络白名单</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/MY_KERNEL/">自制操作系统内核的感受</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/CPU_CARD/">逆向破解纯 CPU SAK20 NFC 校园卡</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/OPS_PCIe/">PCIe DMA 踩坑：在废旧 OPS 上点亮 300 块的 FPGA 矿卡</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 misane<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

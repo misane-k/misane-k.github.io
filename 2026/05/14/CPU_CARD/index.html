@@ -14,7 +14,7 @@
 <meta property="og:description" content="最早接触到射频卡还是在高中，当时我们的饭卡还是存在漏洞的M1卡。我的朋友把线圈拆出来，拿着一个光秃秃的线圈和芯片刷卡成功，收获了食堂大妈奇怪的目光。后来他用PN532把饭卡复制到了另一张卡上，不过没刷几次就报错了，他说是“滚动码”的问题。众所周知，一般卡的金额信息本地和云端各存一份。新卡数据改变但是旧卡没变，再去刷旧卡就会报错。 上了大学，学校的校园卡变成了CPU卡（SAK&#x3D;0x20），">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-05-13T21:56:20.186Z">
-<meta property="article:modified_time" content="2026-05-14T01:32:19.713Z">
+<meta property="article:modified_time" content="2026-05-16T10:47:02.683Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
   
@@ -99,13 +99,13 @@
 <p>上了大学，学校的校园卡变成了CPU卡（SAK&#x3D;0x20），号称和银行卡一个安全等级。分为在线的食堂钱包和离线的水卡钱包。<br>由于网络上关于纯CPU卡的资料很少，我一开始也认为是不可破解的。<span id="more"></span><br>虽然某天“我通过某些不便细说的近源渗透手段搞到了一份读卡器的程序”。<br>不过当时看了一眼，也没太放在心上。</p>
 <h2 id="阶段1"><a href="#阶段1" class="headerlink" title="阶段1"></a>阶段1</h2><p>直到某天，我无意间看到了一篇文章 <a target="_blank" rel="noopener" href="https://blog.lyc8503.net/post/reverse-nju-cpu-card/">逆向破解南京大学纯 CPU SAK28 FM1208 NFC 校园卡</a>，了解到了APDU指令。<br>我又有兴趣研究上位机程序。一开始我用“瞪眼法”去静态分析，这样自然很累。<br>上位机程序貌似兼容了多款读卡器和不同SAK类型的卡，经常会读到不相干的分支。<br>想调试就得在上位机的现场，出了错也不好附加调试器。而在自己的电脑上，没有读卡器和数据库，程序跑不起来。<br>我看了下位机的丝印，使用的主控芯片资料也不多。</p>
 <p>我突然想到，能不能自己编写代码，用软件模拟一个串口呢？<br>最初我用了一个串口回环软件，用python编写另一端（下位机）代码，但是代码一复杂就会超时，超过了上位机程序硬编码的时间。<br>接下来我开始尝试，能否修改DLL呢？<br>以前我在调试其他程序时，会插桩strcmp，可以绕过一些简单的登录校验。<br>顺着这个思路，我Hook了ReadFile&#x2F;WriteFile，发现能完整吐出与下位机交流的串口数据。<br>甚至还能通过assert捕获我的代码没有实现的功能，方便交叉引用继续分析。<br>除去串口数据几个字节的包头，剩下是完整的APDU指令。<br>对照前面的那片文章，基本确定我们学校是复旦微卡，很多指令的具体含义也是靠着“半查资料半盲猜”摸索出来的。</p>
-<p>在我指令差不多集齐后，我购买了Proxmark3，抓到了完整的水卡通信数据。<br>接着我修改了开源项目<a target="_blank" rel="noopener" href="https://github.com/nfcgate/nfcgate">nfcfate</a>相关代码，，让我的手机也能直接模拟水卡和门禁卡了。<br>虽然有外部认证环节，但是外部认证是验证读卡器，卡片只需要返回9000即可。内部认证才是验证卡的，但是流程中不存在内部认证。</p>
+<p>在我指令差不多集齐后，我购买了Proxmark3，抓到了完整的<!--水卡-->通信数据。<br>接着我修改了开源项目<a target="_blank" rel="noopener" href="https://github.com/nfcgate/nfcgate">nfcfate</a>相关代码，让我的手机也能直接模拟<!--水卡和-->门禁卡了。<br>虽然有外部认证环节，但是外部认证是验证读卡器，卡片只需要返回9000即可。内部认证才是验证卡的，但是流程中不存在内部认证。</p>
 <p>至此，可以用PM3或手机抓包，手机仿真卡了。</p>
-<h2 id="阶段2"><a href="#阶段2" class="headerlink" title="阶段2"></a>阶段2</h2><p>下位机能往卡里写数据，那我们自己是不是也能写？我注意到以下APDU指令：<br>    00 B0：READ BINARY<br>    00 D6：UPDATE BINARY<br>事实上确实可行，不过上位机程序交互过程中，要先读卡中一个值，然后通过一个妙妙算法计算出PIN，接下来通过Challenge PIN指令（外部认证）提升权限，最后才能往某个特定文件写数据。<br>这个算法不是常见的AES&#x2F;DES，所以不通过“近源渗透”拿到上位机程序几乎不可能凭空猜到。<br>好在通信链路没有加密，即使无法算出PIN，嗅探通信数据重放也是完全可行的。<br>我算出PIN后，用PN532模块就可以直接更新水卡数据了。<br>而且大部分非Root的手机也具备发送自定义APDU指令的能力，完全可以替代PN532。</p>
+<h2 id="阶段2"><a href="#阶段2" class="headerlink" title="阶段2"></a>阶段2</h2><p>下位机能往卡里写数据，那我们自己是不是也能写？我注意到以下APDU指令：<br>    00 B0：READ BINARY<br>    00 D6：UPDATE BINARY<br>事实上确实可行，不过上位机程序交互过程中，要先读卡中一个值，然后通过一个妙妙算法计算出PIN，接下来通过Challenge PIN指令（外部认证）提升权限，最后才能往某个特定文件写数据。<br>这个算法不是常见的AES&#x2F;DES，所以不通过“近源渗透”拿到上位机程序几乎不可能凭空猜到。<br>好在通信链路没有加密，即使无法算出PIN，嗅探通信数据重放也是完全可行的。<br>我算出PIN后，用PN532模块就可以直接更新文件数据了。<br>而且大部分非Root的手机也具备发送自定义APDU指令的能力，完全可以替代PN532。</p>
 <p>不仅如此，我还注意到一条更有意思的指令：<br>    80 0E：擦除指令 (ERASE BINARY &#x2F; ERASE RECORD)</p>
-<p>这条指令允许我们删除某个目录，然后可以重建目录及文件。<br>卡里一些文件提权的过程我没有分析出来，所以没有权限更新内容。<br>但是通过嗅探或者逆向得知文件内容后，就可以直接删除目录再重建，这样就有权限了。<br>如果我们所有要用到的目录重建的话，就可以将一张白卡写成校园卡。<br>（只涉及水卡和门禁，饭卡我没有分析）</p>
-<p>至此，可以用手机或PN532写卡，随便去某宝买张空白的卡使用了。</p>
-<h2 id="阶段3"><a href="#阶段3" class="headerlink" title="阶段3"></a>阶段3</h2><p>学校不同门禁检测的内容不同，我希望能进一步修改纯CPU卡的UID，某宝卖的TID卡理论上是能做到的。<br>但是我在实操过程中发现，一方面商家不一定提供私有软件，需要自己去找还不一定适配；另一方这种类型的卡并不好买，我找到好几张卡标的是CPU卡、实际测试是M1卡。跟客服说SAK20，对面也听不懂。<br>本来我的手机可以模拟卡UID，但是系统更新后nfcgate不生效了。<br>于是尝试自己画nfc卡。（详见我之后的文章NAC1080）<br>目前这块板子只有部分设备可以正常识别，后续有进展再更新</p>
+<p>这条指令允许我们删除某个目录，然后可以重建目录及文件。<br>卡里一些文件提权的过程我没有分析出来，所以没有权限更新内容。<br>但是通过嗅探或者逆向得知文件内容后，就可以直接删除目录再重建，这样就有权限了。<!-- 如果我们所有要用到的目录重建的话，就可以将一张白卡写成校园卡。 --><br>（只涉及<!--水卡-->门禁，饭卡我没有分析）</p>
+<p>至此，可以用手机或PN532写卡，去某宝买张空白的卡使用了。</p>
+<h2 id="阶段3"><a href="#阶段3" class="headerlink" title="阶段3"></a>阶段3</h2><p>学校不同门禁检测的内容不同，我希望能进一步修改纯CPU卡的UID，某宝卖的TID卡理论上是能做到的。<br>但是我在实操过程中发现，一方面商家不一定提供私有软件，需要自己去找还不一定适配；另一方这种类型的卡并不好买，我找到好几张卡标的是CPU卡、实际测试是M1卡。跟客服说SAK20，对面也听不懂。<br>本来我的手机可以模拟卡UID，但是系统更新后nfcgate不生效了。<br>于是尝试自己画nfc卡。详见<a href="https://misane-k.github.io/2026/05/16/NAC1080/">手机刷不开门禁？一怒之下我画了一张CPU卡</a><br>已验证能修改纯CPU卡的UID，并通过大部分门禁。</p>
 <blockquote>
 <p>相关数据已脱敏, 仅供参考学习</p>
 </blockquote>
@@ -113,7 +113,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://misane-k.github.io/2026/05/14/CPU_CARD/" data-id="cuidHNBuu0-HEPoezVwZQjPYL" data-title="逆向破解纯 CPU SAK20 NFC 校园卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://misane-k.github.io/2026/05/14/CPU_CARD/" data-id="cuidZaMKJDBOwAki1WDbBJYp9" data-title="逆向破解纯 CPU SAK20 NFC 校园卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -171,6 +171,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/05/16/NAC1080/">手机刷不开门禁？一怒之下我画了一张CPU卡</a>
+          </li>
         
           <li>
             <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上无感绕过网络白名单</a>
