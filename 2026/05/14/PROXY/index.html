@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   
   
-  <title>如何在阉割代理功能的平板上无感绕过网络白名单 | misane&#39;s blog</title>
+  <title>如何在阉割代理功能的平板上，无感绕过网络白名单 | misane&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="我高中发的华为平板，有针对IP和域名的白名单。具体来说，只允许少数白名单内容，例如192.168.40.0&#x2F;24可以通过，其他均会被阻断。经过测试，baidu.com会被阻断，但是如果在内网将baidu.com解析到192.168.40.1，访问就不会阻断，然而，平板阉割了WIFI设置里的代理功能，也没法自由安装应用，只有部分应用的webview可以选择网址。那么，能否在完全不设置平板端">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何在阉割代理功能的平板上无感绕过网络白名单">
+<meta property="og:title" content="如何在阉割代理功能的平板上，无感绕过网络白名单">
 <meta property="og:url" content="https://misane-k.github.io/2026/05/14/PROXY/index.html">
 <meta property="og:site_name" content="misane&#39;s blog">
 <meta property="og:description" content="我高中发的华为平板，有针对IP和域名的白名单。具体来说，只允许少数白名单内容，例如192.168.40.0&#x2F;24可以通过，其他均会被阻断。经过测试，baidu.com会被阻断，但是如果在内网将baidu.com解析到192.168.40.1，访问就不会阻断，然而，平板阉割了WIFI设置里的代理功能，也没法自由安装应用，只有部分应用的webview可以选择网址。那么，能否在完全不设置平板端">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-05-14T01:43:59.732Z">
-<meta property="article:modified_time" content="2026-05-14T03:10:25.661Z">
+<meta property="article:modified_time" content="2026-05-16T11:16:41.048Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
   
@@ -87,7 +87,7 @@
         
   
     <h1 class="p-name article-title" itemprop="headline name">
-      如何在阉割代理功能的平板上无感绕过网络白名单
+      如何在阉割代理功能的平板上，无感绕过网络白名单
     </h1>
   
 
@@ -102,13 +102,18 @@
 <p>为了绕过这个限制，最容易想到的是反向代理。<br>（访问网址改变成反向代理地址，TCP dst_ip是反向代理ip，Host字段是反向代理地址，由其他参数决定实际地址）<br>但是如果用来代理大型网站，就会发现很多网站会检查访问网址（域名），如果不是就强制跳转到官网。<br>此外，前端JS动态请求的资源很多也是完整的URL，有的还是动态拼接的，不可能完全替换。因而会被白名单阻断。<br>虽然我们可以根据业务逻辑，修改JS去我们的代理地址查找，但是这样工作量太大了。</p>
 <p>众所周知，HTTP和HTTPS可以在L4（传输层）层代理。<br>TCP包经过普通路由器NAT时，需要重新封包修改IP地址，但这并不会影响内部的HTTPS加密流量。<br>这说明如果我们能在路由器层面对流量进行精细化路由，上层业务是感知不到的。<br>但是我们要修改dst_ip因为不能依赖它，还有什么方法能知道用户想发给那个服务器呢？<br>我们可以将不同域名解析到白名单内不同的独立IP地址，但是这样会很快耗尽白名单的地址空间。</p>
 <p>注意到，HTTP请求中有Host字段，HTTPS请求中有SNI字段。<br>因为多个子域名常绑定到同一个IP，使用这些字段来区分不同的服务。<br>首先，既然平板无法修改本地Hosts，我们需要在路由器上配置DNS劫持，泛解析到白名单内IP（例如192.168.40.1）。<br>此时，平板发出的TCP流量的dst_ip都在白名单内，平板防火墙会直接放行。<br>接下来，路由器需要接管发往192.168.40.1的流量（不同子网下，这个地址默认行为就是交给路由器处理）。<br>我们需要代替真实服务器与平板先完成TCP三次握手，随后接收平板发来的第一个数据包（包含HTTP的Host或是TLS的 Client Hello）。<br>从中提取出期望子域名后，向互联网上该域名的真实IP发起一条新的TCP连接，并将两端的数据流进行转发。<br>整个过程中，我们在路由器上完成了真实的寻址和转发，而并未修改上层业务的加密流量。</p>
-<p>经过测试，大部分网站都是可以正常访问的，包括完全基于HTTPS的B站。<br>这种方案可以达到：设备连上路由器，无需任何修改和设置，虽然直接ping外网不通，但是能通过浏览器正常访问互联网的效果。<br><a target="_blank" rel="noopener" href="https://github.com/misane-k/tproxy">实验代码</a></p>
+<p>经过测试，大部分网站都是可以正常访问的，包括完全基于HTTPS的B站。<br>这种方案可以达到：设备连上路由器，无需任何修改和设置，虽然直接ping外网不通，但是能通过浏览器正常访问互联网的效果。</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/misane-k/tproxy">实验代码</a></p>
+</blockquote>
+<blockquote>
 <p>注：这种方案依赖明文的SNI，随着ECH的普及，这个方案会逐渐失效。</p>
+</blockquote>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://misane-k.github.io/2026/05/14/PROXY/" data-id="cuidrYDlnCfkbKuWsTXtvHRFe" data-title="如何在阉割代理功能的平板上无感绕过网络白名单" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://misane-k.github.io/2026/05/14/PROXY/" data-id="cuidLFrjAZdOYf0jklGVPg8RO" data-title="如何在阉割代理功能的平板上，无感绕过网络白名单" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -172,7 +177,7 @@
           </li>
         
           <li>
-            <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上无感绕过网络白名单</a>
+            <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上，无感绕过网络白名单</a>
           </li>
         
           <li>
