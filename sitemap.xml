@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://misane-k.github.io/2026/05/16/NAC1080/</loc>
+    <loc>https://misane-k.github.io/2026/05/14/CPU_CARD/</loc>
     
     <lastmod>2026-10-24</lastmod>
     
@@ -13,7 +13,16 @@
   <url>
     <loc>https://misane-k.github.io/2026/05/14/OPS_PCIe/</loc>
     
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-10-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://misane-k.github.io/2026/05/16/NAC1080/</loc>
+    
+    <lastmod>2026-10-24</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -30,15 +39,6 @@
   
   <url>
     <loc>https://misane-k.github.io/2026/05/14/PROXY/</loc>
-    
-    <lastmod>2026-05-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://misane-k.github.io/2026/05/14/CPU_CARD/</loc>
     
     <lastmod>2026-05-16</lastmod>
     

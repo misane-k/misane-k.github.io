@@ -13,10 +13,12 @@
 <meta property="og:site_name" content="misane&#39;s blog">
 <meta property="og:description" content="在我还没有台式电脑的时候，我一直都很好奇PCIe协议能承载什么设备。常见的无非是硬盘、网卡、USB控制器之类。不过类比一下，USB接口能实现很多功能，但是像免驱的外置显卡&#x2F;DMA等却很少见。我听说的DMA游戏外挂都是基于“高贵的PCIe”的。于是我把目光投向了FPGA，用于自定义PCIe设备。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://misane-k.github.io/images/ops.png">
 <meta property="article:published_time" content="2026-05-13T21:55:05.547Z">
-<meta property="article:modified_time" content="2026-08-31T03:05:06.083Z">
+<meta property="article:modified_time" content="2026-10-24T05:16:50.614Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://misane-k.github.io/images/ops.png">
   
     <link rel="alternate" href="/atom.xml" title="misane's blog" type="application/atom+xml">
   
@@ -110,6 +112,7 @@
 <p>不过紧接着遇到了第二个问题：设备会经常反复重启。万用表一量，12V供电掉到了10V。<br>我估计这里的12V是转接卡从mini-pcie的3.3V升压得来的。<br>毕竟mini-pcie能提供的功率有限，市面上大部分这种转接卡都需要外接辅助供电，一般是从主机的SATA电源取电。<br>SATA接口本可以提供12V、5V和3.3V电源，但遗憾的是我的OPS主板上12V是浮空的（能看出来没有过孔也没有走线，万用表测量确实没有12V输出）<br>我把FPGA XDMA的功能裁剪，去除了DRAM控制器，用SRAM矩阵代替内存，功率降到了几W终于不重启了。不过没有DRAM还是不行。<br>我购买了一个12V DC充电器，剪断电源线飞线连接到了SATA的6pin供电线上，终于稳定了。<br>（我担心会有电源倒灌的问题，不过好在没有发生，但是不知道哪里漏电了，金属外壳带电了摸上去麻麻的）</p>
 <p>我手动短接了几次找到了技巧，但是每次都短接终究不是长久之计。<br>我在转换器上，飞线了一个1k电阻上拉到3.3V（一开始用了10k，但是只能拉到1.5v）。<br>这样虽然是非标准的，但是我的情况可以稳定使用了。<br>再次进入linux系统，官方的实例传输和读取小文件都没问题，这段经历就告一段落了。<br>（这也让我意识到，DMA的能访问的内存是内核分配的，IOMMU也会阻止非授权的内存访问，所以DMA外挂也需要主机驱动配合啊）</p>
 <p>现在有了台式机，主板上自带很多PCIe插槽，还有我梦寐以求的原生x16通道。再也不用这么麻烦的方式了。</p>
+<p><img src="/../images/ops.png" alt="OPS和K480T"></p>
 <blockquote>
 <p>这是我回忆半年前的经历写下的文字，细节可能有所出入</p>
 </blockquote>
@@ -117,7 +120,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://misane-k.github.io/2026/05/14/OPS_PCIe/" data-id="cuid8BB29VgZW5Hv14m4s_Cfq" data-title="在废旧 OPS 上点亮 300 块的 FPGA 矿卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://misane-k.github.io/2026/05/14/OPS_PCIe/" data-id="cuidbw-bwtiv5KVYAq4WYWg3d" data-title="在废旧 OPS 上点亮 300 块的 FPGA 矿卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       

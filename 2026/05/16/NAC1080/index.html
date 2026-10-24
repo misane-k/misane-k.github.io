@@ -13,12 +13,15 @@
 <meta property="og:site_name" content="misane&#39;s blog">
 <meta property="og:description" content="接上文 经过测试，我发现学校的不同门禁（例如大门、宿舍、教室、工位）检测内容不同。有的检测UID、有的检测文件里的其他值等。而且同样是宿舍，新旧读卡器设备行为也不完全相同。我的手机刷老门禁正常，换了新门禁就识别不到了，这一度让我很困惑。不过我习惯出门随身带卡，对我来说刷卡也更顺手一些。直到有一天，我打算自己画一张纯CPU卡。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://misane-k.github.io/_imgs/nac1080_fr4.png">
+<meta property="og:image" content="https://misane-k.github.io/images/nac1080_fr4.png">
+<meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_front.png">
+<meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_back.png">
+<meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_height.png">
 <meta property="article:published_time" content="2026-05-16T06:25:21.998Z">
-<meta property="article:modified_time" content="2026-10-24T04:37:16.599Z">
+<meta property="article:modified_time" content="2026-10-24T05:05:41.654Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://misane-k.github.io/_imgs/nac1080_fr4.png">
+<meta name="twitter:image" content="https://misane-k.github.io/images/nac1080_fr4.png">
   
     <link rel="alternate" href="/atom.xml" title="misane's blog" type="application/atom+xml">
   
@@ -181,15 +184,21 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
 不过，我上文提到的线圈，在NFC Inductance中是匹配到13.56MHz的。经过寻找我发现nxp的<a target="_blank" rel="noopener" href="https://community.nxp.com/t5/NFC/bd-p/nfc">Online NFC Antenna Design Tool</a>，考虑走线的电容，计算出的结果更准确一些。<br>
 </details>
 
-<p>我使用的纽扣电池CR1220，最大持续电流不超过1mA，连续刷卡时不仅容易断联，而且用几分钟电池电压就下降到没法用了。<br>我每次看到中间高高的电池座，都想把它砍掉。<br><img src="/../_imgs/nac1080_fr4.png" alt="仿真图"><br>我建议PCB和线圈要略小于银行卡尺寸，为增加外壳等留出空间。</p>
+<p>我使用的纽扣电池CR1220，最大持续电流不超过1mA，连续刷卡时不仅容易断联，而且用几分钟电池电压就下降到没法用了。<br>我每次看到中间高高的电池座，都想把它砍掉。<br><img src="/../images/nac1080_fr4.png" alt="仿真图"></p>
+<p>于是我改成使用FPC和超薄锂电池。我找到了一些电芯：</p>
+<ul>
+<li>0.8mm <a target="_blank" rel="noopener" href="https://e.tb.cn/h.j3114srcp7xkU6n?tk=hNiYTDfIudn">中顺芯084545</a></li>
+<li>0.2mm <a target="_blank" rel="noopener" href="https://e.tb.cn/h.jejfYlYZlCPjYRt?tk=kgazTDfCiYV">HT042741</a></li>
+</ul>
+<p>因为还是使用NAC1080，我建议0.8mm即可，未来改成更薄的封装再考虑0.2mm。<br>电池管理我采用BQ25570，这个支持微毫功率的充放电一体锂电池管理，<br>NAC1080能量收集和外置供电貌似是冲突的，我用滑动开关确定供电方式。不过它的能量收集太弱了，不如直接通过排针给电池充电。<br>我建议PCB和线圈要略小于银行卡尺寸，为增加外壳等留出空间。<br>加上外壳后厚度为16mm，对不同读卡器均正常工作，有过充过放保护，静置一个月后锂电池仍有电，<br><img src="/../images/nac1080_fpc_front.png" alt="正面"><br><img src="/../images/nac1080_fpc_back.png" alt="背面"><br><img src="/../images/nac1080_fpc_height.png" alt="厚度"></p>
 <h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>有一些没能验证的想法，和未来想继续做的内容：</p>
 <ol>
-<li>NAC1080已经停产了，也没看到后续升级版本，之后画板估计要使用别的芯片了。</li>
+<li>NAC1080已经停产了，也没看到后续升级版本。之后画板希望使用别的芯片，最好是QFN封装的。</li>
 <li><strong>JavaCard</strong>可以编写自己代码，不过好像需要先select AID，我不确定有没有从select MF开始就能直接执行默认应用的卡。</li>
 <li>我不确定打<strong>硬件断点</strong>来劫持函数是否可行，如果可行可能会比现有方案还要简洁。</li>
-<li>虽然天线绘制一次就能用了，但是我不知道天线性能怎么样，我也没有矢量网络分析仪测试。</li>
+<li>虽然天线绘制一次就能用了，但是实际性能弱于商用卡片，不确定是天线问题还是NAC1080功率过高。</li>
 <li>我测试的时间不够长，在异常处理函数中构造上下文返回，不确定有没有MSP栈越来越小的问题，虽然可以断电重置但是不优雅。</li>
-<li>加上芯片和纽扣电池座还是太厚了，希望未来能用PVC塑封，再通过卡片打印机打印漂亮的封面。</li>
+<li>希望未来能用PVC塑封，再通过卡片打印机打印漂亮的封面。</li>
 </ol>
 <blockquote>
 <p>PCB和代码目前不打算公开，如果某一天开源后再更新</p>
@@ -198,7 +207,7 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://misane-k.github.io/2026/05/16/NAC1080/" data-id="cuidYnb4XVKZ6YFg_w32B5E9v" data-title="手机刷不开门禁？一怒之下我画了一张CPU卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://misane-k.github.io/2026/05/16/NAC1080/" data-id="cuid56ysAoNl31xuKz_lySAdt" data-title="手机刷不开门禁？一怒之下我画了一张CPU卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
