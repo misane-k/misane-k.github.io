@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_back.png">
 <meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_height.png">
 <meta property="article:published_time" content="2026-05-16T06:25:21.998Z">
-<meta property="article:modified_time" content="2026-10-24T05:05:41.654Z">
+<meta property="article:modified_time" content="2026-11-01T03:48:57.141Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://misane-k.github.io/images/nac1080_fr4.png">
@@ -122,7 +122,7 @@
 <p>如果把MCU和射频前端分开选择，可选择的型号更多。<br>例如，我本来想选MSP430作为MCU，它采用的FRAM（铁电存储器）功耗比FLASH低很多。<br>但是还要画核心板，还需要注意I2C&#x2F;SPI读写的协议，为了省事，最终还是选择了集成方案NAC1080。</p>
 <h2 id="绘制PCB"><a href="#绘制PCB" class="headerlink" title="绘制PCB"></a>绘制PCB</h2><p>接下来就是画PCB，我主要参考了这篇文章：<a target="_blank" rel="noopener" href="https://www.kika233.tech/blog/post/55">从零开始设计一个NFC天线</a></p>
 <details>
-<summary>硬核警告</summary>
+<summary>详细内容</summary>
 阅读手册可知，NAC1080内部集成了23.5pF调谐电容，在13.56Mhz频率下，求出天线电感是5.862uH时，不需要外加调谐电容。<br>
 于是我在<a target="_blank" rel="noopener" href="https://eds.st.com/antenna/#/">NFC Inductance</a>计算天线参数。<br>
 我根据个人喜好，选择了：7圈，天线长度64.5mm，天线宽度52mm，导体宽度0.6mm，导体间距0.5mm，PCB厚度0.8mm。相对介电常数保持默认。得出天线电感5.83uH。<br>
@@ -139,7 +139,7 @@
 <p>然后，下载了工具链。<a target="_blank" rel="noopener" href="https://softwaretools.infineon.com/tools/com.ifx.tb.tool.smackfwdevelopmenta21004">smackfwdevelopmenta21004</a></p>
 <h2 id="逆向"><a href="#逆向" class="headerlink" title="逆向"></a>逆向</h2><p>阅读SDK代码时，我只看到了一些数据结构的声明，没有找到设置UID, SAK的代码。我发现官方为了简化开发流程，已经封装好了私有卡格式。<br>当然我们肯定是想要SAK&#x3D;0x20的纯CPU卡的。不过网络上基本找不到其他公开的设计，我只好对照SDK逆向ROM。</p>
 <details>
-<summary>硬核警告</summary>
+<summary>详细内容</summary>
 用ida反编译image_rom，并导入SDK的rom_lib.h，代码逻辑基本就清晰了，可以看出官方没有特意混淆。<br>
 上电首先进入start，随后跳转到sub_1AE4，在这个函数进行了一堆复杂的初始化，包括启用NFC 0号中断。<br>
 最后检查0x10800是否为0x22000（__INITIAL_SP），是就跳转到0x10804（NVM_Reset_Handler）。接下来就是用户代码。<br>
@@ -152,7 +152,7 @@
 
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>明白了固件的逻辑，我们参考反编译代码，重新实现一遍NFC状态机就可以了。<br>不过这时我才发现，固件（image_rom）是只读的，而且是封装在芯片内部的。<br>触发NFC中断时，一定会跑官方的私有协议处理程序，我在想有没有方式绕过：</p>
 <details>
-<summary>硬核警告</summary>
+<summary>详细内容</summary>
 NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定地址查找中断处理程序。我依次考虑了以下对策：<br>
 1. 查看是否调用用户中断处理函数：部分异常（如HardFault）是会的，但是很遗憾NFC中断并不会。<br>
 2. 重定向中断向量表：我之前开发OS内核时，大部分PC是可以这么做的。但是M0通常不实现VTOR寄存器。<br>
@@ -203,7 +203,7 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
 <li>希望未来能用PVC塑封，再通过卡片打印机打印漂亮的封面。</li>
 </ol>
 <blockquote>
-<p>PCB和代码目前不打算公开，如果某一天开源后再更新</p>
+<p><a target="_blank" rel="noopener" href="https://oshwhub.com/misane/project_vbgwrnqa">PCB</a> <a target="_blank" rel="noopener" href="https://github.com/misane-k/NAC1080_PoC">代码</a></p>
 </blockquote>
 
       
