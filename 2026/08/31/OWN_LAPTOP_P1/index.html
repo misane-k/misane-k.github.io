@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>设计一台自己的笔记本（第一部分）：逆向 | misane&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="我一直想设计一款自己的电脑，但是从头设计很难。一方面我不知道用什么元件好，例如触摸板、电池的型号，以太网连接器的高度、是否全包裹、是否沉版等。另一方面需要设计外壳，和键盘、屏幕、主板等装配起来，我之前设计的扩展坞外壳总是松松垮垮的，我没有信心。于是我决定拆一个笔记本，参考成熟的商业设计。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计一台自己的笔记本（第一部分）：逆向">
+<meta property="og:url" content="https://misane-k.github.io/2026/08/31/OWN_LAPTOP_P1/index.html">
+<meta property="og:site_name" content="misane&#39;s blog">
+<meta property="og:description" content="我一直想设计一款自己的电脑，但是从头设计很难。一方面我不知道用什么元件好，例如触摸板、电池的型号，以太网连接器的高度、是否全包裹、是否沉版等。另一方面需要设计外壳，和键盘、屏幕、主板等装配起来，我之前设计的扩展坞外壳总是松松垮垮的，我没有信心。于是我决定拆一个笔记本，参考成熟的商业设计。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://misane-k.github.io/images/f11_edp30.png">
+<meta property="article:published_time" content="2026-08-30T18:27:23.236Z">
+<meta property="article:modified_time" content="2026-11-13T12:13:25.817Z">
+<meta property="article:author" content="misane">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://misane-k.github.io/images/f11_edp30.png">
+  
+    <link rel="alternate" href="/atom.xml" title="misane's blog" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">misane&#39;s blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+          <a class="main-nav-link" href="/link">link</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://misane-k.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-OWN_LAPTOP_P1" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/08/31/OWN_LAPTOP_P1/" class="article-date">
+  <time class="dt-published" datetime="2026-08-30T18:27:23.236Z" itemprop="datePublished">2026-08-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      设计一台自己的笔记本（第一部分）：逆向
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>我一直想设计一款自己的电脑，但是从头设计很难。<br>一方面我不知道用什么元件好，例如触摸板、电池的型号，以太网连接器的高度、是否全包裹、是否沉版等。<br>另一方面需要设计外壳，和键盘、屏幕、主板等装配起来，我之前设计的扩展坞外壳总是松松垮垮的，我没有信心。<br>于是我决定拆一个笔记本，参考成熟的商业设计。</p>
+<span id="more"></span>
+
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>我希望参考笔记本尽可能便宜，意外损坏时替换不心疼。</li>
+<li>我希望它内部有较多空间，结构清晰，异板板尽可能少，方便我学习和替换。</li>
+<li>我希望它是量产的产品，这样在市场上有大量存货，几年后我依然能找到替换件。</li>
+</ul>
+<h2 id="拆机"><a href="#拆机" class="headerlink" title="拆机"></a>拆机</h2><p>首先，我拆开了我的游戏本。我发现游戏本内部满满当当，甚至还有金属隔断起到支撑和保护作用，需要从上到下依次取下，光拆一次就很费劲。<br>游戏本引出了大量接口，例如SATA, 雷电, 多个HDMI。这些并非必须，目前还会增加我理解和实现的难度。<br>而且游戏本太贵了，一旦烧坏器件，我很难再买第二个。</p>
+<p>其次，我拆过几个平板，平板便携性很出色、还有我喜欢的触摸屏。<br>不过平板内部寸土寸金，主板和小板都是异形板，MIPI屏幕、基带没有任何资料。<br>最关键的是，大多数平板只引出一个TypeC接口，这样同时接键盘鼠标和充电都费劲。</p>
+<p>然后，我搜了一些diy套件，但是真的太贵了。我不理解一个亚克力&#x2F;金属外壳，怎么能买到500+的。</p>
+<p>一年前，我在捡垃圾的时候，买到了一个叫 豆小谷F11 的笔记本（<del>并非广告</del>）。<br>性能不强，用的甚至是赛扬处理器 + 被动散热。我玩了一段时间就丢角落吃灰了。<br>某一天，我把它拆开，发现它内部很空旷，甚至连一半的空间都没用上。<br>这在平时是劣势，我会认为是偷工减料，但是此刻成为巨大的优势。<br>作为一个廉价笔记本，拥有必要的接口：一个充电口，3个USB TypeA，一个以太网，一个3.5mm耳机孔，底部可替换nvme硬盘，带有屏幕、键盘、触摸板。<br>我只需要实现必要的部分即可，于是我着手测量外设的线序，以便我自己设计主板驱动外设，最终集成为一个完整的笔记本。</p>
+<h2 id="测量过程"><a href="#测量过程" class="headerlink" title="测量过程"></a>测量过程</h2><p>在系统中，可以看到屏幕的型号，在网上搜索发现是eDP 30pin，不过FPC的线序明显与标准线序不同，这一条线同时包含了屏幕和摄像头。<br>在PCB上，差分对、大面积铺铜的特征很明显，由此可以初步确定哪些是高速信号，哪些是电源。<br>我在电脑运行时，用万用表测电压，得到全部引脚的电压，例如屏幕的8V就是背光电压，还测量了0V与GND的通断，来区分控制信号和电源地。<br>我调节屏幕的亮度，发现有一个引脚的电压值在降低（背光pwm）。<br>不过我还是没法确定差分通道具体是怎么排列的，最后我拆开了屏幕，对比定制线两端的颜色，得到了线序。</p>
+<p><img src="/../images/f11_edp30.png" alt="右侧为连接面板的标准30pin eDP30"></p>
+<p>剩下的比较简单，某些连接器，例如触摸板旁边标注了丝印，INT&#x2F;SCL&#x2F;SDA均有写，用万用表测通断即可确认部分线序。<br>键盘3.3V&#x2F;0V即可区分行和列，我按下键盘一个键（win），发现有一个引脚从3.3V到0V，确实是无源的扫描键盘。<br>不过我都测完了线序，才发现 豆小谷F11 产品非常乱，有14&#x2F;15.6寸屏幕、12V&#x2F;19V输入、左侧1&#x2F;2个TypeA的笔记本，底部标注的全是 豆小谷F11。<br>我在某鱼，买了三个外观相似的，但是内部完全不同，我以第一个拆机的为准，以下是外设线序。<br>在下一篇文章，我会如何设计自己的主板，来驱动这些外设。</p>
+<h2 id="线序"><a href="#线序" class="headerlink" title="线序"></a>线序</h2><p>屏幕 30pin-0.5mm</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+<th>pin_6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0&gt;</td>
+<td>g</td>
+<td>1p</td>
+<td>1n</td>
+<td>g</td>
+<td>0p</td>
+<td>0n</td>
+</tr>
+<tr>
+<td>6&gt;</td>
+<td>g</td>
+<td>an</td>
+<td>ap</td>
+<td>g</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr>
+<td>12&gt;</td>
+<td>g</td>
+<td>x</td>
+<td>x</td>
+<td>nc</td>
+<td>g</td>
+<td>g</td>
+</tr>
+<tr>
+<td>18&gt;</td>
+<td>8</td>
+<td>8</td>
+<td>g</td>
+<td>3.3</td>
+<td>3.3</td>
+<td>hpd</td>
+</tr>
+<tr>
+<td>24&gt;</td>
+<td>pwm</td>
+<td>blen</td>
+<td>g</td>
+<td>dp</td>
+<td>dm</td>
+<td>5</td>
+</tr>
+</tbody></table>
+<p>键盘 28pin 1mm</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0&gt;</td>
+<td>3.3</td>
+<td>3.3</td>
+<td>0(win)</td>
+<td>3.3</td>
+<td>3.3</td>
+</tr>
+<tr>
+<td>5&gt;</td>
+<td>3.3</td>
+<td>0</td>
+<td>0</td>
+<td>3.3</td>
+<td>3.3</td>
+</tr>
+<tr>
+<td>10&gt;</td>
+<td>0</td>
+<td>3.3</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>15&gt;</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>20&gt;</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>3.3(power)</td>
+</tr>
+<tr>
+<td>25&gt;</td>
+<td>g</td>
+<td>nc</td>
+<td>nc</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>触摸板 10pin 0.5mm</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0&gt;</td>
+<td>0</td>
+<td>0</td>
+<td>5</td>
+<td>5</td>
+<td>tp(0)</td>
+</tr>
+<tr>
+<td>5&gt;</td>
+<td>int</td>
+<td>scl</td>
+<td>sda</td>
+<td>g</td>
+<td>3.3</td>
+</tr>
+</tbody></table>
+<p>触摸板（未贴） 6pin 1mm</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0&gt;</td>
+<td>3.3</td>
+<td>scl(1.8)</td>
+<td>sda(1.8)</td>
+<td>int(0.4)</td>
+<td>tp(0)</td>
+</tr>
+<tr>
+<td>5&gt;</td>
+<td>g</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>2S电池 10pin 1.25mm 超薄</p>
+<table>
+<thead>
+<tr>
+<th>pin</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0&gt;</td>
+<td>g</td>
+<td>g</td>
+<td>g</td>
+<td>g</td>
+<td>ntc(10k)</td>
+</tr>
+<tr>
+<td>5&gt;</td>
+<td>nc</td>
+<td>nc</td>
+<td>v</td>
+<td>v</td>
+<td>v</td>
+</tr>
+</tbody></table>
+<p>麦克风&#x2F;扬声器 5pin 0.8mm</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>pin_1</th>
+<th>pin_2</th>
+<th>pin_3</th>
+<th>pin_4</th>
+<th>pin_5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mic</td>
+<td>rp</td>
+<td>rn</td>
+<td>nc</td>
+<td>lp</td>
+<td>ln</td>
+</tr>
+<tr>
+<td>spk</td>
+<td>lp</td>
+<td>ln</td>
+<td>nc</td>
+<td>rn</td>
+<td>rp</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://misane-k.github.io/2026/08/31/OWN_LAPTOP_P1/" data-id="cuidKLz0a9zmnUwm4jffgnDB9" data-title="设计一台自己的笔记本（第一部分）：逆向" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2026/10/24/OWN_LAPTOP_P2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          设计一台自己的笔记本（第二部分）：主板
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2026/08/31/KNSB/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用KNSB推进剂，放飞两枚飞梭模型火箭</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">October 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">August 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/10/24/OWN_LAPTOP_P2/">设计一台自己的笔记本（第二部分）：主板</a>
+          </li>
+        
+          <li>
+            <a href="/2026/08/31/OWN_LAPTOP_P1/">设计一台自己的笔记本（第一部分）：逆向</a>
+          </li>
+        
+          <li>
+            <a href="/2026/08/31/KNSB/">使用KNSB推进剂，放飞两枚飞梭模型火箭</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/16/NAC1080/">手机刷不开门禁？一怒之下我画了一张CPU卡</a>
+          </li>
+        
+          <li>
+            <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上，无感绕过网络白名单</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 misane<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/link" class="mobile-nav-link">link</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

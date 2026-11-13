@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_back.png">
 <meta property="og:image" content="https://misane-k.github.io/images/nac1080_fpc_height.png">
 <meta property="article:published_time" content="2026-05-16T06:25:21.998Z">
-<meta property="article:modified_time" content="2026-11-01T03:48:57.141Z">
+<meta property="article:modified_time" content="2026-11-13T11:36:15.452Z">
 <meta property="article:author" content="misane">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://misane-k.github.io/images/nac1080_fr4.png">
@@ -195,9 +195,9 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
 <p>因为还是使用NAC1080，我建议0.8mm即可，未来改成更薄的封装再考虑0.2mm。<br>电池管理我采用BQ25570，这个支持微毫功率的充放电一体锂电池管理，<br>NAC1080能量收集和外置供电貌似是冲突的，我用滑动开关确定供电方式。不过它的能量收集太弱了，不如直接通过排针给电池充电。<br>我建议PCB和线圈要略小于银行卡尺寸，为增加外壳等留出空间。<br>加上外壳后厚度为16mm，对不同读卡器均正常工作，有过充过放保护，静置一个月后锂电池仍有电，<br><img src="/../images/nac1080_fpc_front.png" alt="正面"><br><img src="/../images/nac1080_fpc_back.png" alt="背面"><br><img src="/../images/nac1080_fpc_height.png" alt="厚度"></p>
 <h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>有一些没能验证的想法，和未来想继续做的内容：</p>
 <ol>
+<li><strong>JavaCard</strong>可以编写自行代码，设置为默认应用从select MF就能选中，参考lyc8503的<a target="_blank" rel="noopener" href="https://blog.lyc8503.net/post/java-card-explore/">这篇文章</a>，比本方案简洁多了。</li>
+<li>我不确定打<strong>硬件断点</strong>来劫持函数是否可行，如果可行可能会比本方案更简洁。</li>
 <li>NAC1080已经停产了，也没看到后续升级版本。之后画板希望使用别的芯片，最好是QFN封装的。</li>
-<li><strong>JavaCard</strong>可以编写自己代码，不过好像需要先select AID，我不确定有没有从select MF开始就能直接执行默认应用的卡。</li>
-<li>我不确定打<strong>硬件断点</strong>来劫持函数是否可行，如果可行可能会比现有方案还要简洁。</li>
 <li>虽然天线绘制一次就能用了，但是实际性能弱于商用卡片，不确定是天线问题还是NAC1080功率过高。</li>
 <li>我测试的时间不够长，在异常处理函数中构造上下文返回，不确定有没有MSP栈越来越小的问题，虽然可以断电重置但是不优雅。</li>
 <li>希望未来能用PVC塑封，再通过卡片打印机打印漂亮的封面。</li>
@@ -209,7 +209,7 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://misane-k.github.io/2026/05/16/NAC1080/" data-id="cuidjF25uDMbXEKBAV7e-bwzy" data-title="手机刷不开门禁？一怒之下我画了一张CPU卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      <a data-url="https://misane-k.github.io/2026/05/16/NAC1080/" data-id="cuidJbXqOieceFULeOnjxMOpJ" data-title="手机刷不开门禁？一怒之下我画了一张CPU卡" class="article-share-link"><span class="fa fa-share">Share</span></a>
       
       
       
@@ -256,7 +256,7 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">August 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/10/">October 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/08/">August 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/05/">May 2026</a></li></ul>
     </div>
   </div>
 
@@ -269,6 +269,14 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
       <ul>
         
           <li>
+            <a href="/2026/10/24/OWN_LAPTOP_P2/">设计一台自己的笔记本（第二部分）：主板</a>
+          </li>
+        
+          <li>
+            <a href="/2026/08/31/OWN_LAPTOP_P1/">设计一台自己的笔记本（第一部分）：逆向</a>
+          </li>
+        
+          <li>
             <a href="/2026/08/31/KNSB/">使用KNSB推进剂，放飞两枚飞梭模型火箭</a>
           </li>
         
@@ -278,14 +286,6 @@ NAC1080搭载的是Arm Cortex-M0处理器内核。触发中断时，会从固定
         
           <li>
             <a href="/2026/05/14/PROXY/">如何在阉割代理功能的平板上，无感绕过网络白名单</a>
-          </li>
-        
-          <li>
-            <a href="/2026/05/14/CPU_CARD/">逆向破解纯 CPU SAK20 NFC 校园卡</a>
-          </li>
-        
-          <li>
-            <a href="/2026/05/14/OPS_PCIe/">在废旧 OPS 上点亮 300 块的 FPGA 矿卡</a>
           </li>
         
       </ul>
